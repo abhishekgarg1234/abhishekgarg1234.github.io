@@ -1,37 +1,37 @@
-
-var globalcategory="";
+var globalcategory="All";
 var keepclass=function(){
 	 if(typeof(Storage) !== "undefined") {
-	//	localStorage.clear();
-	if(localStorage.getItem("feilds")){
-		//alert("garfg");
-		this.feilds=JSON.parse(localStorage.getItem("feilds"));
-		this.notes=JSON.parse(localStorage.getItem("notes"));
-		this.colors=JSON.parse(localStorage.getItem("colors"));
+		//	localStorage.clear();
+		if(localStorage.getItem("feilds")){
+			//alert("garfg");
+			this.feilds=JSON.parse(localStorage.getItem("feilds"));
+			this.notes=JSON.parse(localStorage.getItem("notes"));
+			this.colors=JSON.parse(localStorage.getItem("colors"));
 
+		}	
+		else{
+			//alert("avhu");
+			localStorage.setItem('colors','{"color0":"DarkSalmon","color1":"blue","color2":"green","color3":"orange","color4":"yellow","color5":"black","c6":"purple"}');
+			localStorage.setItem('feilds','{"count":1,"c1":"All"}');
+			localStorage.setItem('notes','{"count":0,"data":[]}');
+			location.reload();
+		}
 	}
 	else{
-	//	alert("avhu");
-		localStorage.setItem('colors','{"color0":"DarkSalmon","color1":"blue","color2":"green","color3":"orange","color4":"yellow","color5":"black","c6":"purple"}');
-		localStorage.setItem('feilds','{"count":0}');
-		localStorage.setItem('notes','{"count":0,"data":[]}');
-			
+		alert("not supported");
 	}
 }
-else{
-	alert("not supported");
-}
-}
 var keep=new keepclass();
+
 var main=function(){
 	var t="anj";
 	newfeildbutton.addEventListener("click",function(){
 	newfeildfunction(); });
-
-	(function(x){
+	//alert("aj");
+	(function(){
 		newnote.addEventListener("click",function(){
-		newnotefunction(parseInt(x)); });
-	})(parseInt(keep.notes.count+1));
+		newnotefunction(); });
+	})();
 
 	function newfeildfunction(){
 		var newfeild=document.getElementById("newfeildtext");
@@ -53,6 +53,7 @@ var main=function(){
 	}
 
 function displaycategories(){
+	//if(localStorage.getItem("keep.notes."))
 	document.getElementsByTagName("div")[1].innerHTML="";
 	var u=parseInt(keep.feilds["count"]);
 	var d = document.createDocumentFragment();
@@ -80,7 +81,8 @@ displaycategories();
 	function newnotefunction(){
 		var tx=document.getElementById("newnotetext");
 		var txt=tx.value;
-		txt=txt.replace(/\n|\r/g, "<br>");
+
+		txt=escapeHtml(txt.trim()).replace(/\n|\r/g, "<br>");
 		if(txt!=""){
 			var count=parseInt(keep.notes.count+1);
 			keep.notes.count=parseInt(count);
@@ -104,7 +106,8 @@ displaycategories();
 
 	function display(str){
 		globalcategory=str;
-		document.getElementById("notes").innerHTML="<p>"+str+"</p>";
+		$("#notes").html("<p>"+str+"</p>");
+		//document.getElementById("notes").innerHTML="<p>"+str+"</p>";
 		var htm;
 		var droptext1="<select class='dropdown' id=drop"+str;
 		var droptext="";
@@ -149,7 +152,7 @@ displaycategories();
 			
 				var checkdataa="";var checki=1;
 				if(keep.notes.data[i-1].checkbox=="true"){				
-					var arr=keep.notes.data[i-1].text.split("<br>");
+					var arr=unescapeHtml(keep.notes.data[i-1].text).split("<br>");
 					var length=arr.length;var status=0;
 					var checkdataa11="";var checkdataa22="";
 					for(var key in arr){
@@ -166,7 +169,7 @@ displaycategories();
 					
 				//newone
 					if(keep.notes.data[i-1].editstatus=="true"){
-						checkdataa +="<input type='text' id='newedit"+i+"'><button type='button' id='ok"+i+"'>ok</button>";
+						checkdataa +="<input type='text' id='newedit"+i+"' autofocus><button type='button' id='ok"+i+"'>ok</button>";
 					}
 					else{
 						checkdataa += "</br><button class='edit' id='edit"+i+"'>Add</button>";
@@ -189,26 +192,36 @@ displaycategories();
 				htm=checkdataa+"</br><button class='delbuttons' id='del"+i+"'>Delete</button>"+droptext1+i+">"+droptext+colortext1+i+"'>"+colortext+"<button class='checkbox' id='check"+i+"'>checkbox</button>";
 				x.innerHTML=htm;
 				d.appendChild(x);
-				document.getElementById("notes").appendChild(d);
+				$("#notes").append(d);
+				//document.getElementById("notes").appendChild(d);
 			
 				var delid="del"+i;
 				(function(x,i1){//alert(x);
 					//console.log(document.getElementById(x));
-					document.getElementById(x).addEventListener("click",function(){
-					deletenote(i1);});//alert(i1);
+					var t="#"+x;
+					$(t).click(function(){
+					deletenote(i1);});
+					//document.getElementById(x).addEventListener("click",function(){
+					//deletenote(i1);});//alert(i1);
 				})(delid,i);
 
 				var newdropid="drop"+str+i;
 				(function(x,i1){
-					document.getElementById(x).addEventListener("change",function(){
-					changecategory(i1,x); });
+					var t="#"+x;
+					$(t).change(function(){
+						changecategory(i1,x); });
+					//document.getElementById(x).addEventListener("change",function(){
+					//changecategory(i1,x); });
 				})(newdropid,i);
 				
 				if(keep.notes.data[i-1].checkbox=="false"){
 						var paraid="p"+i;//alert(paraid);
 						(function(x,i1){
-							document.getElementById(x).addEventListener("blur",function(){
+							var t="#"+x;
+							$(t).blur(function(){
 							changetext(i1,x); });
+							//document.getElementById(x).addEventListener("blur",function(){
+							//changetext(i1,x); });
 						})(paraid,i);
 				}
 				else{
@@ -221,7 +234,6 @@ displaycategories();
 						})(ch,i,ty);
 						ty++;
 					}
-					///*
 					if(keep.notes.data[i-1].editstatus=="false"){
 						var editid="edit"+i;
 						(function(x,i1){
@@ -234,7 +246,7 @@ displaycategories();
 						(function(x,i1){
 							document.getElementById(x).addEventListener("click",function(){
 							okclicked(i1); });
-						})(okid,i);//*/
+						})(okid,i);
 					}
 					
 
@@ -353,6 +365,19 @@ displaycategories();
 		localStorage.setItem("notes",tl);
 	display(globalcategory);
 
+	}
+	function escapeHtml(text) {
+	  var map = {
+	    '&': '&amp;',
+	    '<': '&lt;',
+	    '>': '&gt;',
+	    '"': '&quot;',
+	    "'": '&#039;'
+	  };
+	  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+	}
+	function unescapeHtml(text) {
+	  return text.replace(/(&lt;)/g,'<').replace(/(&gt;)/g,'>').replace(/(&amp;)/g,'&').replace(/(&quot;)/g,'\"').replace(/(&#039;)/g,'\'');
 	}
 }
 var y=new main();
