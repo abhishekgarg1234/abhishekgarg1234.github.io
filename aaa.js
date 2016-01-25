@@ -160,11 +160,11 @@ displaycategories();
 					for(var key in arr){
 						if(keep.notes.data[i-1].checkdata[status]=="true"){
 							//alert("rere");
-							checkdataa11 +="<label id='label"+i+""+checki+"'><input type='checkbox' id='check"+i+""+checki+"' value='"+arr[key]+"' checked><strike>"+arr[key]+"</strike></label><span class='crossmarks' id='cross"+i+""+checki+"'>&nbsp;&nbsp;&nbsp;x</span><span class='editmarks' id='edit_task"+i+""+checki+"'>&nbsp;*</span></br>";
+							checkdataa11 +="<label style='color:"+keep.notes.data[i-1].color+";' id='label"+i+""+checki+"'><input type='checkbox' id='check"+i+""+checki+"' value='"+arr[key]+"' checked><strike>"+arr[key]+"</strike></label><span class='crossmarks' id='cross"+i+""+checki+"'>&nbsp;&nbsp;&nbsp;&#x2718;</span><span class='editmarks' id='edit_task"+i+""+checki+"'>&nbsp;&#x270D;</span></br>";
 							checki +=1;status++;
 						}
 						else{
-							checkdataa22 +="<label id='label"+i+""+checki+"'><input type='checkbox' id='check"+i+""+checki+"' value='"+arr[key]+"'>"+arr[key]+"</label><span class='crossmarks'  id='cross"+i+""+checki+"'>&nbsp;&nbsp;&nbsp;x</span><span class='editmarks' id='edit_task"+i+""+checki+"'>&nbsp;*</span></br>";
+							checkdataa22 +="<label style='color:"+keep.notes.data[i-1].color+";' id='label"+i+""+checki+"'><input type='checkbox' id='check"+i+""+checki+"' value='"+arr[key]+"'>"+arr[key]+"</label><span class='crossmarks'  id='cross"+i+""+checki+"'>&nbsp;&nbsp;&nbsp;&#x2718;</span><span class='editmarks' id='edit_task"+i+""+checki+"'>&nbsp;&#x270D;</span></br>";
 							checki +=1;status++;
 						}
 					}
@@ -178,17 +178,17 @@ displaycategories();
 					
 				//newone
 					if(keep.notes.data[i-1].editstatus=="true"){
-						checkdataa +="<input type='text' id='newedit"+i+"' autofocus><button type='button' id='ok"+i+"'>ok</button>";
+						checkdataa +="<input type='text' id='newedit"+i+"' autofocus><span id='ok"+i+"'>&#x2714;</span>";
 					}
 					else{
-						checkdataa += "</br><button class='edit' id='edit"+i+"'>+</button>";
+						checkdataa += "</br><span title='Add new task' class='edit' id='edit"+i+"'>&#x271C;</span>";
 					}
 				}
 				else{
 				var changedtext=keep.notes.data[i-1].text;
 				var tt=keep.notes.data[i-1].text;
 				var ar1=tt.split("<br>");//var para1=1;
-				var temp1="<p contenteditable='true' id='p"+i+"' style='color:"+keep.notes.data[i-1].color+";background-color="+keep.notes.data[i-1].color+"'>"
+				var temp1="<p  id='p"+i+"' style='color:"+keep.notes.data[i-1].color+";background-color="+keep.notes.data[i-1].color+"'>"
 				var temp2="";
 				for(var key in ar1){
 					 temp2 += ar1[key]+"<br>";
@@ -198,7 +198,7 @@ displaycategories();
 
 				}
 
-				htm=checkdataa+"</br><button class='delbuttons' id='del"+i+"'>Delete</button>"+droptext1+i+">"+droptext+colortext1+i+"'>"+colortext+"<button class='checkbox' id='check"+i+"'>checkbox</button>";
+				htm=checkdataa+"</br><span class='delbuttons' id='del"+i+"'>&#x2716;</span>"+droptext1+i+">"+droptext+colortext1+i+"'>"+colortext+"<button class='checkbox' id='check"+i+"'>Marks</button>";
 				x.innerHTML=htm;
 				d.appendChild(x);
 				$("#notes").append(d);
@@ -386,7 +386,7 @@ displaycategories();
 
 	}
 	function delete_task(i,j){
-		alert(j);
+		//alert(j);
 		keep.notes.data[i-1].checkdata.splice(j-1,1);
 		var x =keep.notes.data[i-1].text;
 		var y=x.split("<br>");
@@ -398,21 +398,23 @@ displaycategories();
 
 	}
 	function edit_task(i,j){
-		var labelid="#"+"label"+i+""+j;alert(labelid);
+		var labelid="#"+"label"+i+""+j;//alert(labelid);
 		var che="#"+"check"+i+""+j;
     	$(labelid).replaceWith( function() {
         return "<input id='tx"+i+""+j+"' type=\"text\" value=\"" + $(che).val() + "\" />";
     	});
-    	var eid="#edit_task"+i+""+j;alert(eid);
+    	var temp="#tx"+i+""+j;
+    	$(temp).css({"border":"none","outline":"none"});
+    	var eid="#edit_task"+i+""+j;//alert(eid);
     	$(eid).replaceWith( function() {
-        return "<button id='a"+i+""+j+"' type='button'>OK</button>";
+        return "<span id='a"+i+""+j+"' >&#x2714;</span>";
     	});var eid2="a"+i+""+j;
     	(function(x,ii,jj){//alert(x);
 					document.getElementById(x).addEventListener("click",function(){
 					change(x,ii,jj); });
 				})(eid2,i,j);
 
-		alert(j);
+		//alert(j);
 		function change(str,i,j){
 			var x =keep.notes.data[i-1].text;
 		var y=x.split("<br>");
@@ -424,12 +426,12 @@ displaycategories();
 		localStorage.setItem("notes",tl);
 		var od="#a"+i+""+j;
 		$(od).replaceWith( function() {
-        return "<span class='editmarks' id='edit_task"+i+""+j+"'>&nbsp;*</span>";
+        return "<span class='editmarks' id='edit_task"+i+""+j+"'>&nbsp;&#x270D;</span>";
     	});
     	$(as).replaceWith( function() {
         return "<label id='label"+i+""+j+"'><input type='checkbox' id='check"+i+""+j+"' value='"+temp+"'>"+temp+"</label>";
     	});
-		//display(globalcategory);
+		display(globalcategory);
 		}
 		
 
