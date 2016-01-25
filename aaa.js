@@ -27,7 +27,6 @@ var main=function(){
 	var t="anj";
 	newfeildbutton.addEventListener("click",function(){
 	newfeildfunction(); });
-	//alert("aj");
 	(function(){
 		newnote.addEventListener("click",function(){
 		newnotefunction(); });
@@ -45,6 +44,7 @@ var main=function(){
 		keep.feilds["count"]=parseInt(tut);
 		var t=JSON.stringify(keep.feilds);
 		localStorage.setItem("feilds",t);
+		$("#newfeildtext").val("");
 		}
 		else{
 			alert("Enter some text.");
@@ -97,6 +97,8 @@ displaycategories();
 				}	
 			var tw=JSON.stringify(keep.notes);
 			localStorage.setItem("notes",tw);
+			$("#newnotetext").val("");
+//			$("#newfeildtext").value="";
 			display(globalcategory);
 		}
 		else{
@@ -106,7 +108,7 @@ displaycategories();
 
 	function display(str){
 		globalcategory=str;
-		$("#notes").html("<p>"+str+"</p>");
+		$("#notes").html("<p id='cat'>"+str+"</p>");
 		//document.getElementById("notes").innerHTML="<p>"+str+"</p>";
 		var htm;
 		var droptext1="<select class='dropdown' id=drop"+str;
@@ -158,21 +160,28 @@ displaycategories();
 					for(var key in arr){
 						if(keep.notes.data[i-1].checkdata[status]=="true"){
 							//alert("rere");
-							checkdataa11 +="<label><input type='checkbox' id='check"+i+""+checki+"' value='"+arr[key]+"' checked>"+arr[key]+"</label>";
+							checkdataa11 +="<label id='label"+i+""+checki+"'><input type='checkbox' id='check"+i+""+checki+"' value='"+arr[key]+"' checked><strike>"+arr[key]+"</strike></label><span class='crossmarks' id='cross"+i+""+checki+"'>&nbsp;&nbsp;&nbsp;x</span><span class='editmarks' id='edit_task"+i+""+checki+"'>&nbsp;*</span></br>";
 							checki +=1;status++;
 						}
 						else{
-							checkdataa22 +="<label><input type='checkbox' id='check"+i+""+checki+"' value='"+arr[key]+"'>"+arr[key]+"</label>";
+							checkdataa22 +="<label id='label"+i+""+checki+"'><input type='checkbox' id='check"+i+""+checki+"' value='"+arr[key]+"'>"+arr[key]+"</label><span class='crossmarks'  id='cross"+i+""+checki+"'>&nbsp;&nbsp;&nbsp;x</span><span class='editmarks' id='edit_task"+i+""+checki+"'>&nbsp;*</span></br>";
 							checki +=1;status++;
-						}						
-					}checkdataa=checkdataa22+checkdataa11;
+						}
+					}
+					if(checkdataa11 !=""){
+						checkdataa=checkdataa22+"</br>Checked Tasks</br>"+checkdataa11;
+					}
+					else{
+						checkdataa=checkdataa22;
+					}
+					
 					
 				//newone
 					if(keep.notes.data[i-1].editstatus=="true"){
 						checkdataa +="<input type='text' id='newedit"+i+"' autofocus><button type='button' id='ok"+i+"'>ok</button>";
 					}
 					else{
-						checkdataa += "</br><button class='edit' id='edit"+i+"'>Add</button>";
+						checkdataa += "</br><button class='edit' id='edit"+i+"'>+</button>";
 					}
 				}
 				else{
@@ -227,11 +236,21 @@ displaycategories();
 				else{
 					var ar4=keep.notes.data[i-1].text.split("<br>");var ty=1;
 					for(var key in ar4){
-						var ch="check"+i+""+ty;
+						var ch="check"+i+""+ty;var cr="cross"+i+""+ty;var ed="edit_task"+i+""+ty;
 						(function(x,i1,y){//alert(x);
 							document.getElementById(x).addEventListener("change",function(){
 							changecheckdata(this,i1,y); });
 						})(ch,i,ty);
+
+						(function(x,i1,y){//alert(x);
+							document.getElementById(x).addEventListener("click",function(){
+							delete_task(i1,y); });
+						})(cr,i,ty);
+						
+						(function(x,i1,y){//alert(x);
+							document.getElementById(x).addEventListener("click",function(){
+							edit_task(i1,y); });
+						})(ed,i,ty);
 						ty++;
 					}
 					if(keep.notes.data[i-1].editstatus=="false"){
@@ -364,6 +383,55 @@ displaycategories();
 		var tl=JSON.stringify(keep.notes);
 		localStorage.setItem("notes",tl);
 	display(globalcategory);
+
+	}
+	function delete_task(i,j){
+		alert(j);
+		keep.notes.data[i-1].checkdata.splice(j-1,1);
+		var x =keep.notes.data[i-1].text;
+		var y=x.split("<br>");
+		y.splice(j-1,1);
+		keep.notes.data[i-1].text=y.join("<br>");
+		var tl=JSON.stringify(keep.notes);
+		localStorage.setItem("notes",tl);
+	display(globalcategory);
+
+	}
+	function edit_task(i,j){
+		var labelid="#"+"label"+i+""+j;alert(labelid);
+		var che="#"+"check"+i+""+j;
+    	$(labelid).replaceWith( function() {
+        return "<input id='tx"+i+""+j+"' type=\"text\" value=\"" + $(che).val() + "\" />";
+    	});
+    	var eid="#edit_task"+i+""+j;alert(eid);
+    	$(eid).replaceWith( function() {
+        return "<button id='a"+i+""+j+"' type='button'>OK</button>";
+    	});var eid2="a"+i+""+j;
+    	(function(x,ii,jj){//alert(x);
+					document.getElementById(x).addEventListener("click",function(){
+					change(x,ii,jj); });
+				})(eid2,i,j);
+
+		alert(j);
+		function change(str,i,j){
+			var x =keep.notes.data[i-1].text;
+		var y=x.split("<br>");
+		var as="#tx"+i+""+j;
+		y[j-1]=$(as).val();
+		var temp=y[j-1];
+		keep.notes.data[i-1].text=y.join("<br>");
+		var tl=JSON.stringify(keep.notes);
+		localStorage.setItem("notes",tl);
+		var od="#a"+i+""+j;
+		$(od).replaceWith( function() {
+        return "<span class='editmarks' id='edit_task"+i+""+j+"'>&nbsp;*</span>";
+    	});
+    	$(as).replaceWith( function() {
+        return "<label id='label"+i+""+j+"'><input type='checkbox' id='check"+i+""+j+"' value='"+temp+"'>"+temp+"</label>";
+    	});
+		//display(globalcategory);
+		}
+		
 
 	}
 	function escapeHtml(text) {
